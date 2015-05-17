@@ -4,8 +4,10 @@
 /// Title screen script
 /// </summary>
 
-var text : String = "";
-var skin : GUISkin = Resources.LoadAssetAtPath("Assets/Scripts/GUISkin.GUISkin",GUISkin);
+public var text : String = "";
+
+public var skin : GUISkin;
+
 function OnGUI()
 {
 	var textAreaWidth : int = 512;
@@ -15,18 +17,20 @@ function OnGUI()
 	var textAreaX : int = Screen.width / 2 - (textAreaWidth / 2);
 	var textAreaY : int = (2 * Screen.height / 3) - textAreaHeight;
 	
-	var labelX : int = Screen.width / 2 - 275;
-	var labelY : int = Screen.height / 4 - 200;
+	var labelWidth : int = 550;
+	var labelHeight : int = 200;
+	
+	var labelX : int = Screen.width / 2 - (labelWidth / 2);
+	var labelY : int = Screen.height / 25;
 	
 	GUI.skin = skin;
-	//var style:GUIStyle;
-	//style.fontSize = 20;
+
 	GUI.Label(
 		new Rect(
 			labelX ,
 			labelY ,
-			550,
-			200),
+			labelWidth,
+			labelHeight),
 			"Модуль устройства имитации  КСА 86Ж6"
 	);
 	text = GUI.TextArea (
