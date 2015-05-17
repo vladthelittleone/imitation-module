@@ -5,7 +5,7 @@
 /// </summary>
 
 var text : String = "";
-
+var skin : GUISkin = Resources.LoadAssetAtPath("Assets/Scripts/GUISkin.GUISkin",GUISkin);
 function OnGUI()
 {
 	var textAreaWidth : int = 512;
@@ -15,6 +15,20 @@ function OnGUI()
 	var textAreaX : int = Screen.width / 2 - (textAreaWidth / 2);
 	var textAreaY : int = (2 * Screen.height / 3) - textAreaHeight;
 	
+	var labelX : int = Screen.width / 2 - 275;
+	var labelY : int = Screen.height / 4 - 200;
+	
+	GUI.skin = skin;
+	//var style:GUIStyle;
+	//style.fontSize = 20;
+	GUI.Label(
+		new Rect(
+			labelX ,
+			labelY ,
+			550,
+			200),
+			"Модуль устройства имитации  КСА 86Ж6"
+	);
 	text = GUI.TextArea (
 	  // Center in X, 2/3 of the height in Y
 	  new Rect (
