@@ -16,6 +16,7 @@ function Update ()
 	if (state == START)
 	{
 		Debug.Log(parser.imitationDelaySec);
+		
 	}
 	
 	state = ACTION;
