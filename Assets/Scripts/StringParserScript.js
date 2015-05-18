@@ -74,6 +74,7 @@ private function parseZeroCommand()
 {
 	if (commands[0, 0] != 0 && commands[0, 1] != 0) 
 	{
+		Debug.Log("Waiting zero command");
 		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
 	}
 	
@@ -81,6 +82,7 @@ private function parseZeroCommand()
 	
 	if (imitationDelaySec > 300)
 	{
+		Debug.Log("Imitation delay large");
 		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
 	}
 	
@@ -88,6 +90,7 @@ private function parseZeroCommand()
 	
 	if (objectAngel > 360) 
 	{
+		Debug.Log("Andel large");
 		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
 	}
 }
@@ -97,6 +100,7 @@ private function parseFirstCommand()
 {
 	if (commands[1, 0] != 1) 
 	{
+		Debug.Log("Waiting first command");
 		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
 	}
 	
@@ -104,6 +108,7 @@ private function parseFirstCommand()
 	
 	if (initialVelocity > 2000)
 	{
+		Debug.Log("Velocity large");
 		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
 	}
 	
@@ -115,6 +120,7 @@ private function parseSecondCommand()
 {
 	if(commands[2,0] != 2)
 	{
+		Debug.Log("Waiting second command");
 		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name	
 	}
 	
@@ -122,6 +128,7 @@ private function parseSecondCommand()
 	
 	if(heightPlane > 50000)
 	{
+		Debug.Log("Height large");
 		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
 	}
 	
@@ -137,6 +144,7 @@ private function parseSecondCommand()
 			distanceBetweenPlane = 6.4;
 			break;
 		default:
+			Debug.Log("Invalid distance");
 			Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
 			break;
 	}
@@ -145,6 +153,7 @@ private function parseSecondCommand()
 	
 	if(amountOfPlane > 7)
 	{
+		Debug.Log("Numbers large");
 		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
 	}
 }
@@ -154,11 +163,13 @@ private function parseThirdCommand()
 {
 	if(commands[3,0] != 3)
 	{
+		Debug.Log("Waiting third command");
 		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name	
 	}
 	
 	if( (commands[3,1] != 0) || (commands[3,2] != 0) || (commands[3,3] != 0))
-	{
+	{	
+		Debug.Log("Invalid in command 3");
 		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name	
 	}
 	
@@ -166,6 +177,7 @@ private function parseThirdCommand()
 	
 	if(specularSurface > 9)
 	{
+		Debug.Log("Specular Force large");
 		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name	
 	}
 }
