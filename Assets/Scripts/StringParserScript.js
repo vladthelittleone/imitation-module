@@ -7,6 +7,10 @@ public var imitationDelaySec : int;
 public var objectAngel : int;
 public var initialVelocity : int;
 public var interference : int;
+public var heightPlane : long;
+public var distanceBetweenPlane : float;
+public var amountOfPlane : int;
+public var specularSurface : float; 
 
 function Start () 
 {	
@@ -109,11 +113,59 @@ private function parseFirstCommand()
 // 2-command
 private function parseSecondCommand()
 {
-
+	if(commands[2,0] != 2)
+	{
+		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name	
+	}
+	
+	heightPlane = 100 * (commands[2,1] * 100 + commands[2,2] * 10 + commands[2,3]);
+	
+	if(heightPlane > 50000)
+	{
+		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
+	}
+	
+	switch(commands[2,4])
+	{
+		case 1:
+			distanceBetweenPlane = 1.6;
+			break;
+		case 2:
+			distanceBetweenPlane = 3.2;
+			break;
+		case 3:
+			distanceBetweenPlane = 6.4;
+			break;
+		default:
+			Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
+			break;
+	}
+	
+	amountOfPlane = commands[2,5];
+	
+	if(amountOfPlane > 7)
+	{
+		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
+	}
 }
 
 // 3-command
 private function parseThirdCommand()
 {
-
+	if(commands[3,0] != 3)
+	{
+		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name	
+	}
+	
+	if( (commands[3,1] != 0) || (commands[3,2] != 0) || (commands[3,3] != 0))
+	{
+		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name	
+	}
+	
+	specularSurface = commands[3,4] + commands[3,5] * 0.1;
+	
+	if(specularSurface > 9)
+	{
+		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name	
+	}
 }
