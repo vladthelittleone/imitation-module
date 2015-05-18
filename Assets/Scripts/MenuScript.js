@@ -53,9 +53,12 @@ function OnGUI()
 	  "START"
 	  ))
 	{
-	  // On Click, load the first level.
-	  PlayerPrefs.SetString("Training", text); // Set pref for indicator game scene
-	  Application.LoadLevel("IndicatorScene"); // "IndicatorScene" is the scene name
+	  if (!text.Equals(""))
+	  {
+	   	// On Click, load the first level.
+	  	PlayerPrefs.SetString("Training", text); // Set pref for indicator game scene
+	  	Application.LoadLevel("IndicatorScene"); // "IndicatorScene" is the scene name
+	  }
 	}
 	
     // Draw a button to start the game
