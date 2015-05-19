@@ -1,7 +1,22 @@
 ﻿#pragma strict
 
+// 0 0 3 0 3 0
+// 1 0 0 1 9 9
+// 2 0 0 1 1 1
+// 3 0 0 0 9 9
+// 0 0 3 0 3 0
+// 1 0 0 1 9 9
+// 2 0 0 1 1 1
+// 3 0 0 0 9 9
+
 private var NUMBER_COUNT = 6;   
 private var commands : int[ , ];
+
+private var parser: StringParserScript;
+private var state: int;
+
+private var START: int = 0;
+private var ACTION: int = 1;
 
 public var imitationDelaySec : int;
 public var objectAngel : int;
@@ -27,8 +42,17 @@ function Start ()
 	parseSplitedArray(splited);
 }
 
-function Update () {
-
+function Update () 
+{
+ 	if (state == START)
+	{
+		Debug.Log(imitationDelaySec);
+		
+	}
+	
+	state = ACTION;
+	
+	transform.Translate (0.0001,0,0);
 }
 
 private function parseSplitedArray(splited : String[])

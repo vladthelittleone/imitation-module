@@ -4,24 +4,25 @@
 /// Title screen script
 /// </summary>
 
-public var text : String = "";
+public var text: String = "";
 
-public var skin : GUISkin;
+public var skin: GUISkin;
 
 function OnGUI()
 {
-	var textAreaWidth : int = 512;
-	var textAreaHeight : int = 240;
-	var buttonHeight : int = 60;
+	var textAreaWidth: int = 512;
+	var textAreaHeight: int = 240;
+	var buttonHeight: int = 60;
 
-	var textAreaX : int = Screen.width / 2 - (textAreaWidth / 2);
-	var textAreaY : int = (2 * Screen.height / 3) - textAreaHeight;
+	var textAreaX: int = Screen.width / 2 - (textAreaWidth / 2);
+	var textAreaY: int = (2 * Screen.height / 3) - textAreaHeight;
 	
-	var labelWidth : int = 550;
-	var labelHeight : int = 200;
+	var labelWidth: int = 512;
+	var labelHeight: int = 60;
+	var labelOffset: int = 70;
 	
 	var labelX : int = Screen.width / 2 - (labelWidth / 2);
-	var labelY : int = Screen.height / 25;
+	var labelY : int = textAreaY - labelOffset;
 	
 	GUI.skin = skin;
 
@@ -47,8 +48,8 @@ function OnGUI()
 	  // Center in X, 2/3 of the height in Y
 	  new Rect(
 	  textAreaX, 
-	  textAreaY + textAreaHeight, 
-	  textAreaWidth / 2, 
+	  textAreaY + textAreaHeight + 10, 
+	  textAreaWidth / 2 - 10,  
 	  buttonHeight),
 	  "START"
 	  ))
@@ -65,9 +66,9 @@ function OnGUI()
 	if (GUI.Button(
 	  // Center in X, 2/3 of the height in Y
 	  new Rect(
-	  textAreaX + textAreaWidth / 2, 
-	  textAreaY + textAreaHeight, 
-	  textAreaWidth / 2, 
+	  textAreaX + textAreaWidth / 2 + 10, 
+	  textAreaY + textAreaHeight + 10, 
+	  textAreaWidth / 2 - 10, 
 	  buttonHeight),
 	  "CLEAR"
 	  ))
