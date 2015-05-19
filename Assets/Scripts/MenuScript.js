@@ -4,25 +4,25 @@
 /// Title screen script
 /// </summary>
 
-public var text: String = "";
+public var text:String = "";
+
+public var TEXT_AREA_WIDTH:int = 512;
+public var TEXT_AREA_HEIGHT:int = 240;
+public var BUTTON_HEIGHT:int = 60;
+	
+public var LABEL_WIDTH:int = 512;
+public var LABEL_HEIGHT:int = 60;
+public var LABLE_OFFSET:int = 70;
 
 public var skin: GUISkin;
 
 function OnGUI()
 {
-	var textAreaWidth: int = 512;
-	var textAreaHeight: int = 240;
-	var buttonHeight: int = 60;
-
-	var textAreaX: int = Screen.width / 2 - (textAreaWidth / 2);
-	var textAreaY: int = (2 * Screen.height / 3) - textAreaHeight;
+	var textAreaX: int = Screen.width / 2 - (TEXT_AREA_WIDTH / 2);
+	var textAreaY: int = (2 * Screen.height / 3) - TEXT_AREA_HEIGHT;
 	
-	var labelWidth: int = 512;
-	var labelHeight: int = 60;
-	var labelOffset: int = 70;
-	
-	var labelX : int = Screen.width / 2 - (labelWidth / 2);
-	var labelY : int = textAreaY - labelOffset;
+	var labelX : int = Screen.width / 2 - (LABEL_WIDTH / 2);
+	var labelY : int = textAreaY - LABLE_OFFSET;
 	
 	GUI.skin = skin;
 
@@ -30,8 +30,8 @@ function OnGUI()
 		new Rect(
 			labelX ,
 			labelY ,
-			labelWidth,
-			labelHeight),
+			LABEL_WIDTH,
+			LABEL_HEIGHT),
 			"Модуль устройства имитации  КСА 86Ж6"
 	);
 	text = GUI.TextArea (
@@ -39,8 +39,8 @@ function OnGUI()
 	  new Rect (
 	  textAreaX, 
 	  textAreaY, 
-	  textAreaWidth, 
-	  textAreaHeight), 
+	  TEXT_AREA_WIDTH, 
+	  TEXT_AREA_HEIGHT), 
 	  text, -1);
 	  
 	// Draw a button to start the game
@@ -48,10 +48,10 @@ function OnGUI()
 	  // Center in X, 2/3 of the height in Y
 	  new Rect(
 	  textAreaX, 
-	  textAreaY + textAreaHeight + 10, 
-	  textAreaWidth / 2 - 10,  
-	  buttonHeight),
-	  "START"
+	  textAreaY + TEXT_AREA_HEIGHT + 10, 
+	  TEXT_AREA_WIDTH / 2 - 10,  
+	  BUTTON_HEIGHT),
+	  "ВВОД"
 	  ))
 	{
 	  if (!text.Equals(""))
@@ -66,11 +66,11 @@ function OnGUI()
 	if (GUI.Button(
 	  // Center in X, 2/3 of the height in Y
 	  new Rect(
-	  textAreaX + textAreaWidth / 2 + 10, 
-	  textAreaY + textAreaHeight + 10, 
-	  textAreaWidth / 2 - 10, 
-	  buttonHeight),
-	  "CLEAR"
+	  textAreaX + TEXT_AREA_WIDTH / 2 + 10, 
+	  textAreaY + TEXT_AREA_HEIGHT + 10, 
+	  TEXT_AREA_WIDTH / 2 - 10, 
+	  BUTTON_HEIGHT),
+	  "СБРОС"
 	  ))
 	{
 	  // On Click, clear text area.

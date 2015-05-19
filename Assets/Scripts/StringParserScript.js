@@ -1,31 +1,43 @@
 ﻿#pragma strict
 
 // 0 0 3 0 3 0
-// 1 0 0 1 9 9
-// 2 0 0 1 1 1
+// 1 1 0 0 9 9
+// 2 1 0 0 1 1
 // 3 0 0 0 9 9
 // 0 0 3 0 3 0
 // 1 0 0 1 9 9
 // 2 0 0 1 1 1
 // 3 0 0 0 9 9
 
-private var NUMBER_COUNT = 6;   
-private var commands : int[ , ];
+private var NUMBER_COUNT: int = 6; 
+private var ONE_REVIEW: int = 10;
+private var RATIO_VELOCITY: double = 0.00005;
 
-private var parser: StringParserScript;
-private var state: int;
+private var state: int = START;
 
 private var START: int = 0;
-private var ACTION: int = 1;
+private var IMITATION: int = 1;
+  
+private var commands : int[ , ];
+
+private var timer : float;
+
+private var aircraftVelocity : int;
+private var direction : Vector3;
 
 public var imitationDelaySec : int;
 public var objectAngel : int;
 public var initialVelocity : int;
 public var interference : int;
-public var heightPlane : long;
-public var distanceBetweenPlanes : float;
+public var heightPlane : int;
 public var countOfPlanes : int;
 public var specularSurface : float; 
+public var distanceBetweenPlanes : float;
+
+function Awake()
+{
+	timer = Time.time;
+}
 
 function Start () 
 {	
@@ -34,25 +46,47 @@ function Start ()
 	
 	if ((splited.length % NUMBER_COUNT) != 0)
 	{
+		Debug.Log("Splited array length is incorrect " + splited.length % NUMBER_COUNT);
 		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
 	}
 	
 	var size : int = splited.length / NUMBER_COUNT; 
 	
 	parseSplitedArray(splited);
+	
+	aircraftVelocity = initialVelocity;
+	
+	direction = Vector3(Mathf.Sin(objectAngel), Mathf.Cos(objectAngel), 0);
+	Debug.Log(direction);
 }
 
 function Update () 
 {
- 	if (state == START)
+	if(Input.GetMouseButtonDown(0) && state == START)
 	{
-		Debug.Log(imitationDelaySec);
+		state = IMITATION;
 		
+		var p : Vector3 = GetComponent.<Camera>().main.ScreenToWorldPoint(Input.mousePosition);
+		
+		transform.position = new Vector3(p.x, p.y, 0);
+    
+		Debug.Log(transform.position);
 	}
 	
-	state = ACTION;
-	
-	transform.Translate (0.0001,0,0);
+	if (state == IMITATION)
+	{
+		var upd : long = Time.time - timer;
+	 	var count : int = 0;
+	 	
+	 	if (upd > 10)
+	 	{
+	 		count = timer / ONE_REVIEW;
+	 		
+	 		timer = Time.time;
+	 		
+			transform.Translate(direction * aircraftVelocity * count * RATIO_VELOCITY);
+	 	}
+ 	}
 }
 
 private function parseSplitedArray(splited : String[])
@@ -61,6 +95,8 @@ private function parseSplitedArray(splited : String[])
 	
 	if (size < 4)
 	{
+		Debug.Log("Incorrect command size");
+	
 		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
 	}
 	
@@ -74,6 +110,8 @@ private function parseSplitedArray(splited : String[])
 			
 			if (tmp < 0)
 			{
+				Debug.Log("Negative number");
+			
 				Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
 			}
 			
