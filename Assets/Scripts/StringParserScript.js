@@ -11,7 +11,7 @@
 
 private var NUMBER_COUNT: int = 6; 
 private var ONE_REVIEW: int = 10;
-private var RATIO_VELOCITY: double = 0.00005;
+private var RATIO_VELOCITY: double = 0.000005;
 
 private var state: int = START;
 
@@ -56,8 +56,8 @@ function Start ()
 	
 	aircraftVelocity = initialVelocity;
 	
-	direction = Vector3(Mathf.Sin(objectAngel), Mathf.Cos(objectAngel), 0);
-	Debug.Log(direction);
+	direction = Vector3(Mathf.Cos(objectAngel * Mathf.Deg2Rad), Mathf.Sin(objectAngel * Mathf.Deg2Rad), 0);
+	direction.Normalize();
 }
 
 function Update () 
@@ -69,8 +69,6 @@ function Update ()
 		var p : Vector3 = GetComponent.<Camera>().main.ScreenToWorldPoint(Input.mousePosition);
 		
 		transform.position = new Vector3(p.x, p.y, 0);
-    
-		Debug.Log(transform.position);
 	}
 	
 	if (state == IMITATION)
@@ -78,14 +76,14 @@ function Update ()
 		var upd : long = Time.time - timer;
 	 	var count : int = 0;
 	 	
-	 	if (upd > 10)
+	 	if (upd > 1)
 	 	{
-	 		count = timer / ONE_REVIEW;
+//	 		count = timer / ONE_REVIEW;
 	 		
 	 		timer = Time.time;
 	 		
-			transform.Translate(direction * aircraftVelocity * count * RATIO_VELOCITY);
-	 	}
+			transform.Translate(direction * aircraftVelocity * RATIO_VELOCITY);
+	 	}	 	
  	}
 }
 
