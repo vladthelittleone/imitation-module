@@ -1,13 +1,13 @@
 ﻿#pragma strict
 
-// 0 0 3 0 3 0
-// 1 1 0 0 9 9
-// 2 1 0 0 1 1
-// 3 0 0 0 9 9
-// 0 0 3 0 3 0
-// 1 0 0 1 9 9
-// 2 0 0 1 1 1
-// 3 0 0 0 9 9
+//0 0 0 1 3 0
+//1 1 0 0 5 5
+//2 1 0 0 2 2
+//3 0 0 0 9 9
+//0 0 3 0 3 0
+//1 0 0 1 9 9
+//2 0 0 1 1 1
+//3 0 0 0 9 9
 
 private var NUMBER_COUNT: int = 6; 
 private var ONE_REVIEW: int = 10;
@@ -16,7 +16,8 @@ private var RATIO_VELOCITY: double = 0.000005;
 private var state: int = START;
 
 private var START: int = 0;
-private var IMITATION: int = 1;
+private var DELAY: int = 1;
+private var IMITATION: int = 2;
   
 private var commands : int[ , ];
 
@@ -28,17 +29,25 @@ private var direction : Vector3;
 public var imitationDelaySec : int;
 public var objectAngel : int;
 public var initialVelocity : int;
-public var interference : int;
-public var heightPlane : int;
+public var interference : float;
+public var planeHeight : int;
 public var countOfPlanes : int;
 public var specularSurface : float; 
 public var distanceBetweenPlanes : float;
 
+public var aircraftPrefab : GameObject;
+  
 function Awake()
 {
 	timer = Time.time;
 }
 
+function OnGUI() 
+{
+	GUI.color = new Color(0, 0, 0, 1f);;
+    GUI.Label(new Rect(0, 0, 200, 20), "Высота цели: " + planeHeight);
+}
+ 
 function Start () 
 {	
 	var training : String = PlayerPrefs.GetString("Training");
@@ -50,36 +59,68 @@ function Start ()
 		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
 	}
 	
-	var size : int = splited.length / NUMBER_COUNT; 
-	
+	// Парсим команды
 	parseSplitedArray(splited);
 	
+	// Инициализация начальной скоростью
+	// Позднее скорость может меняться
 	aircraftVelocity = initialVelocity;
 	
+	// Начальное направление самолета
 	direction = Vector3(Mathf.Cos(objectAngel * Mathf.Deg2Rad), Mathf.Sin(objectAngel * Mathf.Deg2Rad), 0);
 	direction.Normalize();
+	
+	// Устанавливаем видимость цели в зависимости от помех и ЭОП.
+	var alpha : float = (specularSurface / 4.5f) * (1f - (interference / 99));
+	
+	Debug.Log("Initial alpha of object is " + alpha);
+	
+	for (var i = 0; i < countOfPlanes; i++)
+	{
+		var childObject : GameObject = Instantiate(aircraftPrefab) as GameObject;
+ 		childObject.transform.parent = transform;
+ 		childObject.transform.position = transform.position;
+ 		childObject.transform.position.x = transform.position.x + (i * distanceBetweenPlanes / 50);
+ 	}
+ 	
+	var renderers : Component[] = GetComponentsInChildren(SpriteRenderer);
+	for (var renderer : SpriteRenderer in renderers) {
+			renderer.enabled = false;
+			renderer.color = new Color(1f, 1f, 1f, alpha);
+	}
 }
 
 function Update () 
-{
+{	
+	// Устанавливаем позицию по нажатой кнопки мыши
 	if(Input.GetMouseButtonDown(0) && state == START)
 	{
-		state = IMITATION;
-		
 		var p : Vector3 = GetComponent.<Camera>().main.ScreenToWorldPoint(Input.mousePosition);
 		
 		transform.position = new Vector3(p.x, p.y, 0);
+		
+		state = DELAY;
 	}
 	
+	// Задержка начала имитации
+	if (imitationDelaySec < Time.time - timer && state == DELAY)
+	{
+		Debug.Log("Cancle delay [" + imitationDelaySec + "] sec. Start imitation.");
+		
+		var renderers : Component[] = GetComponentsInChildren(SpriteRenderer);
+		for (var renderer : SpriteRenderer in renderers) {
+				renderer.enabled = true;
+		}
+			
+		state = IMITATION;
+	}
+		
 	if (state == IMITATION)
 	{
 		var upd : long = Time.time - timer;
-	 	var count : int = 0;
 	 	
 	 	if (upd > 1)
 	 	{
-//	 		count = timer / ONE_REVIEW;
-	 		
 	 		timer = Time.time;
 	 		
 			transform.Translate(direction * aircraftVelocity * RATIO_VELOCITY);
@@ -89,8 +130,10 @@ function Update ()
 
 private function parseSplitedArray(splited : String[])
 {
+	// Количество комманд
 	var size : int = splited.length / NUMBER_COUNT; 
 	
+	// Проверка на начальные данные
 	if (size < 4)
 	{
 		Debug.Log("Incorrect command size");
@@ -100,6 +143,7 @@ private function parseSplitedArray(splited : String[])
 	
 	commands = new int[size, NUMBER_COUNT];
 	
+	// Заполнение матрицы комманд
 	for (var i = 0; i < size; i++)
 	{
 		for (var j = 0; j < NUMBER_COUNT; j++)
@@ -117,6 +161,7 @@ private function parseSplitedArray(splited : String[])
 		}
 	}
 	
+	// Инициализация начальных переменных
 	initialSettings();
 }
 
@@ -184,11 +229,11 @@ private function parseSecondCommand()
 		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name	
 	}
 	
-	heightPlane = 100 * (commands[2, 1] * 100 + commands[2, 2] * 10 + commands[2, 3]);
+	planeHeight = 100 * (commands[2, 1] * 100 + commands[2, 2] * 10 + commands[2, 3]);
 	
-	if(heightPlane > 50000)
+	if(planeHeight > 50000 || planeHeight < 100)
 	{
-		Debug.Log("Height large");
+		Debug.Log("Invalid height");
 		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
 	}
 	
@@ -235,7 +280,7 @@ private function parseThirdCommand()
 	
 	specularSurface = commands[3, 4] + commands[3, 5] * 0.1;
 	
-	if(specularSurface > 9.9f)
+	if(specularSurface > 9.9f || specularSurface < 0.1f)
 	{
 		Debug.Log("To large specular force");
 		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name	
