@@ -70,10 +70,12 @@ function OnGUI()
 	  textAreaY + TEXT_AREA_HEIGHT + 10, 
 	  TEXT_AREA_WIDTH / 2 - 10, 
 	  BUTTON_HEIGHT),
-	  "СБРОС"
-	  ))
+	  "Справка"
+	))
+	  
 	{
 	  // On Click, clear text area.
-	  text = "";
+	  Application.LoadLevel("ReferenceScene");
 	}
+	
 }
