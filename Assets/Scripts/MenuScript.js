@@ -78,4 +78,9 @@ function OnGUI()
 	  Application.LoadLevel("ReferenceScene");
 	}
 	
+	GUI.Label(new Rect(
+	textAreaX - 80 ,
+	textAreaY + TEXT_AREA_HEIGHT + 100, 
+	250,40 ),"Ошибки:" + PlayerPrefs.GetString("Error"));
+	
 }
