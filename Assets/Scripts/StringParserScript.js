@@ -9,6 +9,7 @@
 //6 1 4 0 0 9
 //7 1 4 1 0 9
 //8 5 4 0 0 9
+//9 1 1 9 0 0
 
 private var NUMBER_COUNT: int = 6; 
 private var ONE_REVIEW: int = 10;
@@ -19,33 +20,77 @@ private var state: int = START;
 private var START: int = 0;
 private var DELAY: int = 1;
 private var IMITATION: int = 2;
+private var END_OF_IMITATION: int = 3;
   
+// #########################
+// Список комманд
 private var commands : int[ , ];
 
+// Таймер
 private var timer : float;
 
-private var aircraftVelocity : float;
-private var direction : Vector3;
 
+// #########################
 // Номер текущей команды
 private var numberOfCommand : int = 3;
 
+// Ускорение
 private var acceleration : float = 0;
+
+// Текущее модуль измнения высоты
 private var altitudeAcceleration : float = 0;
+
+// Текущий угол поворота
 private var rotationAngel : float = 0;
+
+// Текущая скорость самолета
+private var aircraftVelocity : float;
+
+// Время выполнения комманды
 private var durationSite : float = 0;
 
+// Время выполнения "Змейки"
+private var snakeDuration : float = 0;
+
+
+// #########################
+// Направление модуля изменения высоты
 private var altitudeAccelerationDirection : int = 0;
 
+
+// #########################
+// Задержка иммитации
 private var imitationDelaySec : int;
+
+// Начальный угол объекта
 private var objectAngel : int;
+
+// Начальное направление самолета
+private var direction : Vector3;
+
+// Начальная скорость
 private var initialVelocity : int;
+
+// Кол-во самолетов
 private var countOfPlanes : int;
 
+
+// #########################
+// Текущая высота
 private var planeHeight : float;
+
+// Помехи
 private var interference : float;
+
+// Эффективная отражающая поверхность
 private var specularSurface : float; 
+
+// Расстояние между самолетами
 private var distanceBetweenPlanes : float;
+
+// #########################
+// выполняется "Змейка"?
+private var snakeCount : int = 0;
 
 public var aircraftPrefab : GameObject;
 
@@ -111,6 +156,10 @@ function Update ()
 		
 		transform.position = new Vector3(p.x, p.y, 0);
 		
+		// Создаем новую точку
+		var startPoint : GameObject = Instantiate(aircraftPrefab) as GameObject;
+		startPoint.transform.position = transform.position;
+		
 		state = DELAY;
 	}
 	
@@ -129,10 +178,11 @@ function Update ()
 			
 	if (state == IMITATION)
 	{	
-		if (Time.time - timer > 2 * ONE_REVIEW)
+		if (Time.time - timer > 1)
 		{
 			// Создаем новую точку
 			var point : GameObject = Instantiate(aircraftPrefab) as GameObject;
+			
 			point.transform.position = transform.position;
 			
 			timer = Time.time;
@@ -140,7 +190,7 @@ function Update ()
 		
 	 	durationSite = durationSite - Time.deltaTime;
 	
-	 	tryExecuteNewCommand();
+		tryExecuteNewCommand();
 		
  		aircraftVelocity += Time.deltaTime * acceleration;
  		planeHeight += Time.deltaTime * altitudeAcceleration * altitudeAccelerationDirection;
@@ -412,12 +462,57 @@ private function parseEighthCommand()
 	computeRotation();
 }
 
+// 9-command
+private function parseNinthCommand()
+{
+	if(commands[numberOfCommand, 0] != 9)
+	{
+		Debug.Log("Invalid ninth command");
+		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name	
+	}
+	
+	snakeCount = commands[numberOfCommand, 1];
+	
+	if(snakeCount > 9 || snakeCount < 0)
+	{
+		Debug.Log("Invalid snake count");
+		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name	
+	}
+	
+	var overload : int = commands[numberOfCommand, 2] * 2;
+	
+	if (overload > 10 || overload < 2)
+	{
+		Debug.Log("Invalid overload");
+		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
+	}
+	
+	snakeDuration = commands[numberOfCommand, 3] * ONE_REVIEW; 
+	
+	if(snakeDuration > 90 || snakeDuration < 0)
+	{
+		Debug.Log("Invalid snake duration");
+		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name	
+	}
+	
+	if( (commands[numberOfCommand, 4] != 0) || (commands[numberOfCommand, 5] != 0))
+	{	
+		Debug.Log("Invalid command 9");
+		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name	
+	}
+	
+	// Рассчет поворота в секунду 
+	durationSite = snakeDuration / 2;
+	rotationAngel = 180 / durationSite;
+}
+
 private function reset()
 {
 	altitudeAccelerationDirection = 0;
 	altitudeAcceleration = 0;
 	acceleration = 0;
 	rotationAngel = 0;
+	snakeCount = 0;
 }
 
 private function computeRotation()
@@ -502,6 +597,19 @@ private function tryExecuteNewCommand()
 	 	
 	if (durationSite <= 0)
  	{
+ 		if (snakeCount > 0)
+ 		{
+ 			durationSite = snakeDuration / 2;
+ 			rotationAngel = -rotationAngel;
+ 			
+ 			if (rotationAngel < 0)
+ 			{
+ 				snakeCount--;
+ 			} 
+ 			
+ 			return;
+ 		}
+ 		
  		reset();
 	 	
 	 	numberOfCommand++;
@@ -509,7 +617,7 @@ private function tryExecuteNewCommand()
 	 	if (size  < numberOfCommand + 1)
 	 	{
 	 		Debug.Log("Size of command pull [" + size + "] and number of command [" + numberOfCommand + "]");
-			Application.LoadLevel("MenuScene"); // "MenuScene" is the scene
+	 		state = END_OF_IMITATION;
 	 	} 
 	 	else 
 	 	{
@@ -529,6 +637,9 @@ private function tryExecuteNewCommand()
 					break;
 				case 8:
 					parseEighthCommand();
+					break;
+				case 9:
+					parseNinthCommand();
 					break;
 				default:
 					Debug.Log("Invalid command number");
