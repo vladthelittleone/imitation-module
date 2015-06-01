@@ -4,10 +4,8 @@
 //1 1 0 0 5 5
 //2 1 0 0 2 2
 //3 0 0 0 9 9
-//0 0 3 0 3 0
-//1 0 0 1 9 9
-//2 0 0 1 1 1
-//3 0 0 0 9 9
+//4 1 1 1 0 1
+//5 1 1 1 0 1
 
 private var NUMBER_COUNT: int = 6; 
 private var ONE_REVIEW: int = 10;
@@ -23,17 +21,27 @@ private var commands : int[ , ];
 
 private var timer : float;
 
-private var aircraftVelocity : int;
+public var aircraftVelocity : float;
 private var direction : Vector3;
 
-public var imitationDelaySec : int;
-public var objectAngel : int;
-public var initialVelocity : int;
-public var interference : float;
-public var planeHeight : int;
-public var countOfPlanes : int;
-public var specularSurface : float; 
-public var distanceBetweenPlanes : float;
+// Номер текущей команды
+private var numberOfCommand : int = 3;
+
+public var acceleration : float = 0;
+public var altitudeAcceleration : float = 0;
+public var altitudeAccelerationDirection : int = 0;
+public var overload : int = 0;
+public var durationSite : float = 0;
+
+private var imitationDelaySec : int;
+private var objectAngel : int;
+private var initialVelocity : int;
+private var countOfPlanes : int;
+
+private var planeHeight : float;
+private var interference : float;
+private var specularSurface : float; 
+private var distanceBetweenPlanes : float;
 
 public var aircraftPrefab : GameObject;
   
@@ -117,14 +125,13 @@ function Update ()
 		
 	if (state == IMITATION)
 	{
-		var upd : long = Time.time - timer;
-	 	
-	 	if (upd > 1)
-	 	{
-	 		timer = Time.time;
-	 		
-			transform.Translate(direction * aircraftVelocity * RATIO_VELOCITY);
-	 	}	 	
+	 	durationSite = durationSite - Time.deltaTime;
+	
+	 	tryExecuteNewCommand();
+		
+ 		aircraftVelocity += Time.deltaTime * acceleration;
+ 		planeHeight += Time.deltaTime * altitudeAcceleration * altitudeAccelerationDirection;
+	 	transform.Translate(Time.deltaTime * direction * aircraftVelocity * RATIO_VELOCITY);	
  	}
 }
 
@@ -272,7 +279,7 @@ private function parseThirdCommand()
 		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name	
 	}
 	
-	if( (commands[3,1] != 0) || (commands[3,2] != 0) || (commands[3,3] != 0))
+	if( (commands[3, 1] != 0) || (commands[3, 2] != 0) || (commands[3,3] != 0))
 	{	
 		Debug.Log("Invalid command 3");
 		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name	
@@ -284,5 +291,199 @@ private function parseThirdCommand()
 	{
 		Debug.Log("To large specular force");
 		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name	
+	}
+}
+
+// 4-command
+private function parseFourthCommand()
+{
+	if(commands[numberOfCommand, 0] != 4)
+	{
+		Debug.Log("Invalid fourth command");
+		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name	
+	}
+	
+	acceleration = commands[numberOfCommand, 1] * 2;
+	
+	if (acceleration > 12) 
+	{
+		Debug.Log("To large acceleration");
+		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
+	}
+	
+	altitudeAcceleration = commands[numberOfCommand, 2] * 20;
+	
+	if (altitudeAcceleration > 180)
+	{
+		Debug.Log("To large heigh acceleration");
+		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
+	}
+	
+	switch(commands[numberOfCommand, 3])
+	{
+		case 0:
+			altitudeAccelerationDirection = 1;
+			break;
+		case 1:
+			altitudeAccelerationDirection = -1;
+			break;
+		default:
+			Debug.Log("Invalid altitude acceleration direction");
+			Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
+			break;
+	}
+	
+	durationSite = (commands[numberOfCommand, 4] * 10 + commands[numberOfCommand, 5]) * ONE_REVIEW;
+	
+	Debug.Log("New duration: " + durationSite);
+	
+	if (durationSite > 99 * ONE_REVIEW)
+	{
+		Debug.Log("To large duration site");
+		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene nam
+	}
+}
+
+// 5-command
+private function parseFifthCommand()
+{
+	if(commands[numberOfCommand, 0] != 5)
+	{
+		Debug.Log("Invalid fifth command");
+		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name	
+	}
+	
+	acceleration = -commands[numberOfCommand, 1] * 2;
+	
+	if (acceleration < -12) 
+	{
+		Debug.Log("To low acceleration");
+		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
+	}
+	
+	altitudeAcceleration = commands[numberOfCommand, 2] * 20;
+	
+	if (altitudeAcceleration > 180)
+	{
+		Debug.Log("To large heigh acceleration");
+		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
+	}
+	
+	switch(commands[numberOfCommand, 3])
+	{
+		case 0:
+			altitudeAccelerationDirection = 1;
+			break;
+		case 1:
+			altitudeAccelerationDirection = -1;
+			break;
+		default:
+			Debug.Log("Invalid altitude acceleration direction");
+			Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
+			break;
+	}
+	
+	durationSite = (commands[numberOfCommand, 4] * 10 + commands[numberOfCommand, 5]) * ONE_REVIEW;
+	
+	Debug.Log("New duration: " + durationSite);
+	
+	if (durationSite > 99 * ONE_REVIEW)
+	{
+		Debug.Log("To large duration site");
+		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene nam
+	}
+}
+
+// 6-command
+private function parseSixthCommand()
+{
+	if(commands[numberOfCommand, 0] != 6)
+	{
+		Debug.Log("Invalid sixth command");
+		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name	
+	}
+	
+	acceleration = commands[numberOfCommand, 1] * 2;
+	
+	if (acceleration > 12) 
+	{
+		Debug.Log("To large acceleration");
+		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
+	}
+	
+	overload = commands[numberOfCommand, 2] * 2;
+	
+	if (overload > 10 || overload < 2)
+	{
+		Debug.Log("Invalid overload");
+		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
+	}
+	
+	switch(commands[numberOfCommand, 3])
+	{
+		case 0:
+			altitudeAccelerationDirection = 1;
+			break;
+		case 1:
+			altitudeAccelerationDirection = -1;
+			break;
+		default:
+			Debug.Log("Invalid altitude acceleration direction");
+			Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
+			break;
+	}
+	
+	durationSite = (commands[numberOfCommand, 4] * 10 + commands[numberOfCommand, 5]) * ONE_REVIEW;
+	
+	Debug.Log("New duration: " + durationSite);
+	
+	if (durationSite > 99 * ONE_REVIEW)
+	{
+		Debug.Log("To large duration site");
+		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene nam
+	}
+}
+
+private function reset()
+{
+	altitudeAccelerationDirection = 0;
+	altitudeAcceleration = 0;
+	acceleration = 0;
+	overload = 0;
+}
+
+private function tryExecuteNewCommand()
+{
+ 	var size : int = commands.Length / NUMBER_COUNT;
+	 	
+	if (durationSite <= 0)
+ 	{
+ 		reset();
+	 	
+	 	numberOfCommand++;
+	 	
+	 	if (size  < numberOfCommand + 1)
+	 	{
+	 		Debug.Log("Size of command pull [" + size + "] and number of command [" + numberOfCommand + "]");
+			Application.LoadLevel("MenuScene"); // "MenuScene" is the scene
+	 	} 
+	 	else 
+	 	{
+		 	switch(commands[numberOfCommand, 0])
+			{
+				case 4:
+					parseFourthCommand();
+					break;
+				case 5:
+					parseFifthCommand();
+					break;
+				case 6:
+					parseSixthCommand();
+				default:
+					Debug.Log("Invalid command number");
+					Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
+					break;
+			}
+	 	}
 	}
 }
