@@ -32,7 +32,7 @@ private var timer : float;
 
 // #########################
 // Номер текущей команды
-private var numberOfCommand : int = 3;
+private var numberOfCommand : int = -1;
 
 // Ускорение
 private var acceleration : float = 0;
@@ -246,6 +246,8 @@ private function initialSettings()
 // Zero command
 private function parseZeroCommand()
 {
+	numberOfCommand++;
+	
 	if (commands[0, 0] != 0 || commands[0, 1] != 0) 
 	{
 		toMainMenu("Неверное значение комманды");	
@@ -269,6 +271,8 @@ private function parseZeroCommand()
 // First command
 private function parseFirstCommand()
 {
+	numberOfCommand++;
+	
 	if (commands[1, 0] != 1) 
 	{
 		toMainMenu("Неверное значение комманды");	
@@ -287,6 +291,8 @@ private function parseFirstCommand()
 // 2-command
 private function parseSecondCommand()
 {
+	numberOfCommand++;
+	
 	if(commands[2, 0] != 2)
 	{
 		toMainMenu("Неверное значение комманды");	
@@ -326,6 +332,8 @@ private function parseSecondCommand()
 // 3-command
 private function parseThirdCommand()
 {
+	numberOfCommand++;
+	
 	if(commands[3, 0] != 3)
 	{
 		toMainMenu("Неверное значение комманды");	
