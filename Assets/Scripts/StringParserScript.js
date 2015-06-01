@@ -102,10 +102,13 @@ function Awake()
 function OnGUI() 
 {
 	GUI.color = new Color(0, 0, 0, 1f);;
-    GUI.Label(new Rect(0, 0, 200, 20), "Высота цели: " + planeHeight);
-    GUI.Label(new Rect(0, 20, 200, 20), "Скорость цели: " + aircraftVelocity);
-    GUI.Label(new Rect(0, 40, 200, 20), "Ускорение цели: " + acceleration);
-    GUI.Label(new Rect(0, 60, 200, 20), "Количество в группе: " + countOfPlanes);
+    GUI.Label(new Rect(0, 0, 250, 20), "Высота цели: " + planeHeight);
+    GUI.Label(new Rect(0, 20, 250, 20), "Скорость цели: " + aircraftVelocity);
+    GUI.Label(new Rect(0, 40, 250, 20), "Ускорение цели: " + acceleration);
+    GUI.Label(new Rect(0, 60, 250, 20), "Количество в группе: " + countOfPlanes);
+    GUI.Label(new Rect(0, 80, 250, 20), "Угол разворота: " + rotationAngel);
+    GUI.Label(new Rect(0, 100, 250, 20), "Продолжительность периодов: " + snakeDuration);
+    GUI.Label(new Rect(0, 120, 250, 20), "Количество периодов 'Змейка': " + snakeCount);
 }
  
 function Start () 
@@ -115,8 +118,7 @@ function Start ()
 	
 	if ((splited.length % NUMBER_COUNT) != 0)
 	{
-		Debug.Log("Splited array length is incorrect " + splited.length % NUMBER_COUNT);
-		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
+		toMainMenu("Некоректный количество цифр в команде: " + splited.length % NUMBER_COUNT);	
 	}
 	
 	// Парсим команды
@@ -207,9 +209,7 @@ private function parseSplitedArray(splited : String[])
 	// Проверка на начальные данные
 	if (size < 4)
 	{
-		Debug.Log("Incorrect command size");
-	
-		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
+		toMainMenu("Некоректное кол-во комманд: " + size);	
 	}
 	
 	commands = new int[size, NUMBER_COUNT];
@@ -223,9 +223,7 @@ private function parseSplitedArray(splited : String[])
 			
 			if (tmp < 0)
 			{
-				Debug.Log("Negative number");
-			
-				Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
+				toMainMenu("Найдено отрицательное значение");	
 			}
 			
 			commands[i, j] = tmp;
@@ -250,24 +248,21 @@ private function parseZeroCommand()
 {
 	if (commands[0, 0] != 0 || commands[0, 1] != 0) 
 	{
-		Debug.Log("Invalid zero command");
-		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
+		toMainMenu("Неверное значение комманды");	
 	}
 	
 	imitationDelaySec = 10 * ((10 * commands[0, 2]) + commands[0, 3]);
 	
 	if (imitationDelaySec > 300)
 	{
-		Debug.Log("To large imitation delay");
-		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
+		toMainMenu("Выская задержка начала имитации: " + imitationDelaySec);
 	}
 	
 	objectAngel = 10 * ((10 * commands[0, 4]) + commands[0, 5]);
 	
 	if (objectAngel > 360) 
 	{
-		Debug.Log("To large angel");
-		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
+		toMainMenu("Некоректный качальный курс цели: " + objectAngel);
 	}
 }
 
@@ -276,16 +271,14 @@ private function parseFirstCommand()
 {
 	if (commands[1, 0] != 1) 
 	{
-		Debug.Log("Invalid first command");
-		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
+		toMainMenu("Неверное значение комманды");	
 	}
 	
 	initialVelocity = 10 * ((100 * commands[1, 1]) + (10 * commands[1, 2]) + commands[1, 3]);
 	
 	if (initialVelocity > 2000)
 	{
-		Debug.Log("To large velocity");
-		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
+		toMainMenu("Неверное значение начальной скорости цели: " + initialVelocity);	
 	}
 	
 	interference = (10 * commands[1, 4]) + commands[1, 5];
@@ -296,16 +289,14 @@ private function parseSecondCommand()
 {
 	if(commands[2, 0] != 2)
 	{
-		Debug.Log("Invalid second command");
-		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name	
+		toMainMenu("Неверное значение комманды");	
 	}
 	
 	planeHeight = 100 * (commands[2, 1] * 100 + commands[2, 2] * 10 + commands[2, 3]);
 	
 	if(planeHeight > 50000 || planeHeight < 100)
 	{
-		Debug.Log("Invalid height");
-		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
+		toMainMenu("Неверное значение высоты цели: " + planeHeight);
 	}
 	
 	switch(commands[2, 4])
@@ -320,8 +311,7 @@ private function parseSecondCommand()
 			distanceBetweenPlanes = 6.4;
 			break;
 		default:
-			Debug.Log("Invalid distance");
-			Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
+			toMainMenu("Неверное значение расстояния между целями: " + commands[2, 4]);
 			break;
 	}
 	
@@ -329,8 +319,7 @@ private function parseSecondCommand()
 	
 	if(countOfPlanes > 7)
 	{
-		Debug.Log("To large count of planes");
-		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
+		toMainMenu("Неверное значение количества в группе: " + countOfPlanes);
 	}
 }
 
@@ -339,22 +328,19 @@ private function parseThirdCommand()
 {
 	if(commands[3, 0] != 3)
 	{
-		Debug.Log("Invalid third command");
-		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name	
+		toMainMenu("Неверное значение комманды");	
 	}
 	
 	if( (commands[3, 1] != 0) || (commands[3, 2] != 0) || (commands[3,3] != 0))
 	{	
-		Debug.Log("Invalid command 3");
-		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name	
+		toMainMenu("Неверное формат комманды");	
 	}
 	
 	specularSurface = commands[3, 4] + commands[3, 5] * 0.1;
 	
 	if(specularSurface > 9.9f || specularSurface < 0.1f)
 	{
-		Debug.Log("To large specular force");
-		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name	
+		toMainMenu("Слишком высокое ЭОП " + specularSurface);
 	}
 }
 
@@ -363,16 +349,14 @@ private function parseFourthCommand()
 {
 	if(commands[numberOfCommand, 0] != 4)
 	{
-		Debug.Log("Invalid fourth command");
-		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name	
+		toMainMenu("Неверное значение комманды");	
 	}
 	
 	acceleration = commands[numberOfCommand, 1] * 2;
 	
 	if (acceleration > 12) 
 	{
-		Debug.Log("To large acceleration");
-		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
+		toMainMenu("Слишком высокое значение модуля линейного ускорения " + acceleration);
 	}
 	
 	computeAccelerationCommands();
@@ -383,16 +367,14 @@ private function parseFifthCommand()
 {
 	if(commands[numberOfCommand, 0] != 5)
 	{
-		Debug.Log("Invalid fifth command");
-		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name	
+		toMainMenu("Неверное значение комманды");
 	}
 	
 	acceleration = -commands[numberOfCommand, 1] * 2;
 	
 	if (acceleration < -12) 
 	{
-		Debug.Log("To low acceleration");
-		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
+		toMainMenu("Слишком низкое значение модуля линейного ускорения " + acceleration);
 	}
 
 	computeAccelerationCommands();
@@ -403,16 +385,14 @@ private function parseSixthCommand()
 {
 	if(commands[numberOfCommand, 0] != 6)
 	{
-		Debug.Log("Invalid sixth command");
-		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name	
+		toMainMenu("Неверное значение комманды");	
 	}
 	
 	acceleration = commands[numberOfCommand, 1] * 2;
 	
 	if (acceleration > 12) 
 	{
-		Debug.Log("To large acceleration");
-		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
+		toMainMenu("Слишком высокое значение модуля линейного ускорения " + acceleration);	
 	}
 	
 	// Рассчет поворота в секунду 
@@ -424,16 +404,14 @@ private function parseSeventhCommand()
 {
 	if(commands[numberOfCommand, 0] != 7)
 	{
-		Debug.Log("Invalid seventh command");
-		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name	
+		toMainMenu("Неверное значение комманды");
 	}
 	
 	acceleration = -commands[numberOfCommand, 1] * 2;
 	
 	if (acceleration < -12) 
 	{
-		Debug.Log("To large acceleration");
-		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
+		toMainMenu("Слишком низкое значение модуля линейного ускорения " + acceleration);	
 	}
 	
 	// Рассчет поворота в секунду 
@@ -445,8 +423,7 @@ private function parseEighthCommand()
 {
 	if(commands[numberOfCommand, 0] != 8)
 	{
-		Debug.Log("Invalid eighth command");
-		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name	
+		toMainMenu("Неверное значение комманды");	
 	}
 	
 	altitudeAcceleration = commands[numberOfCommand, 2] * 20;
@@ -454,8 +431,7 @@ private function parseEighthCommand()
 	
 	if (altitudeAcceleration > 180)
 	{
-		Debug.Log("To large heigh acceleration");
-		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
+		toMainMenu("Неверное значение модуля скорости изменения высоты " + altitudeAcceleration);
 	}
 	
 	// Рассчет поворота в секунду 
@@ -467,38 +443,33 @@ private function parseNinthCommand()
 {
 	if(commands[numberOfCommand, 0] != 9)
 	{
-		Debug.Log("Invalid ninth command");
-		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name	
+		toMainMenu("Неверное значение комманды");	
 	}
 	
 	snakeCount = commands[numberOfCommand, 1];
 	
 	if(snakeCount > 9 || snakeCount < 0)
 	{
-		Debug.Log("Invalid snake count");
-		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name	
+		toMainMenu("Неверное значение количества периодов 'Змейки': " + snakeCount);
 	}
 	
 	var overload : int = commands[numberOfCommand, 2] * 2;
 	
 	if (overload > 10 || overload < 2)
 	{
-		Debug.Log("Invalid overload");
-		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
+		toMainMenu("Неверное значение перегрузки: " + overload);
 	}
 	
 	snakeDuration = commands[numberOfCommand, 3] * ONE_REVIEW; 
 	
 	if(snakeDuration > 90 || snakeDuration < 0)
 	{
-		Debug.Log("Invalid snake duration");
-		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name	
+		toMainMenu("Неверна продолжительность периодов: " + commands[numberOfCommand, 3]);	
 	}
 	
 	if( (commands[numberOfCommand, 4] != 0) || (commands[numberOfCommand, 5] != 0))
 	{	
-		Debug.Log("Invalid command 9");
-		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name	
+		toMainMenu("Неверный формат команды №9");
 	}
 	
 	// Рассчет поворота в секунду 
@@ -521,8 +492,7 @@ private function computeRotation()
 	
 	if (overload > 10 || overload < 2)
 	{
-		Debug.Log("Invalid overload");
-		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
+		toMainMenu("Неверное значение перегрузки: " + overload);
 	}
 	
 	var rotationDirection : int = 1;
@@ -536,8 +506,7 @@ private function computeRotation()
 			rotationDirection = -1;
 			break;
 		default:
-			Debug.Log("Invalid rotation direction");
-			Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
+			toMainMenu("Неверное направление угла");
 			break;
 	}
 	
@@ -545,8 +514,7 @@ private function computeRotation()
 	
 	if (angel > 360 || angel < 10)
 	{
-		Debug.Log("Invalid rotation angel");
-		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene nam
+		toMainMenu("Неверный угол поворота: " + angel);
 	}
 	
 	// Рассчет поворота в секунду 
@@ -562,8 +530,7 @@ private function computeAccelerationCommands()
 	
 	if (altitudeAcceleration > 180)
 	{
-		Debug.Log("To large heigh acceleration");
-		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
+		toMainMenu("Слишком высокое значение изменения высоты: " + altitudeAcceleration);
 	}
 	
 	switch(commands[numberOfCommand, 3])
@@ -575,8 +542,7 @@ private function computeAccelerationCommands()
 			altitudeAccelerationDirection = -1;
 			break;
 		default:
-			Debug.Log("Invalid altitude acceleration direction");
-			Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
+			toMainMenu("Неверное направление изменения высоты");
 			break;
 	}
 	
@@ -586,9 +552,17 @@ private function computeAccelerationCommands()
 	
 	if (durationSite > 99 * ONE_REVIEW)
 	{
-		Debug.Log("To large duration site");
-		Application.LoadLevel("MenuScene"); // "MenuScene" is the scene nam
+		toMainMenu("Слишком высокая продолжительность участка в обзорах " + durationSite / ONE_REVIEW);
 	}
+}
+
+private function toMainMenu(error : String) 
+{
+	var e : String = error + " [в списке под номером " + numberOfCommand + "]";
+	
+	PlayerPrefs.SetString("Error", e);
+	Debug.Log(e);
+	Application.LoadLevel("MenuScene"); // "MenuScene" is the scene nam
 }
 
 private function tryExecuteNewCommand()
@@ -642,8 +616,7 @@ private function tryExecuteNewCommand()
 					parseNinthCommand();
 					break;
 				default:
-					Debug.Log("Invalid command number");
-					Application.LoadLevel("MenuScene"); // "MenuScene" is the scene name
+					toMainMenu("Неверный номер команды");
 					break;
 			}
 	 	}
