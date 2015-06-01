@@ -102,13 +102,13 @@ function Awake()
 function OnGUI() 
 {
 	GUI.color = new Color(0, 0, 0, 1f);;
-    GUI.Label(new Rect(0, 0, 250, 20), "Высота цели: " + planeHeight);
-    GUI.Label(new Rect(0, 20, 250, 20), "Скорость цели: " + aircraftVelocity);
-    GUI.Label(new Rect(0, 40, 250, 20), "Ускорение цели: " + acceleration);
-    GUI.Label(new Rect(0, 60, 250, 20), "Количество в группе: " + countOfPlanes);
-    GUI.Label(new Rect(0, 80, 250, 20), "Угол разворота: " + rotationAngel);
-    GUI.Label(new Rect(0, 100, 250, 20), "Продолжительность периодов: " + snakeDuration);
-    GUI.Label(new Rect(0, 120, 250, 20), "Количество периодов 'Змейка': " + snakeCount);
+    GUI.Label(new Rect(0, 0, 250, 20), "ВЦ: " + planeHeight);
+    GUI.Label(new Rect(0, 20, 250, 20), "СЦ: " + aircraftVelocity);
+    GUI.Label(new Rect(0, 40, 250, 20), "МУ: " + acceleration);
+    GUI.Label(new Rect(0, 60, 250, 20), "КЦ: " + countOfPlanes);
+    GUI.Label(new Rect(0, 80, 250, 20), "УР: " + rotationAngel);
+    GUI.Label(new Rect(0, 100, 250, 20), "ПЗ: " + snakeDuration);
+    GUI.Label(new Rect(0, 120, 250, 20), "КП: " + snakeCount);
 }
  
 function Start () 
