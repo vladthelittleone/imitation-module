@@ -76,4 +76,16 @@ function OnGUI()
 	  // On Click, clear text area.
 	  text = "";
 	}
+	
+	if (GUI.Button(
+	new Rect(
+	textAreaX + TEXT_AREA_WIDTH / 2 + 100, 
+	textAreaY + TEXT_AREA_HEIGHT + 100,
+	TEXT_AREA_WIDTH / 2 - 10, 
+	  60),
+	"Справка"
+	))
+	{
+		Application.LoadLevel("ReferenceScene");
+	}
 }
