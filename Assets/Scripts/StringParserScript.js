@@ -22,6 +22,9 @@ private var DELAY: int = 1;
 private var IMITATION: int = 2;
 private var END_OF_IMITATION: int = 3;
   
+public var BUTTON_HEIGHT:int = 60;
+public var BUTTON_WIDTH:int = 100;
+  
 // #########################
 // Список комманд
 private var commands : int[ , ];
@@ -92,6 +95,8 @@ private var distanceBetweenPlanes : float;
 // выполняется "Змейка"?
 private var snakeCount : int = 0;
 
+private var training : String = "";
+
 public var aircraftPrefab : GameObject;
 
 function Awake()
@@ -101,6 +106,9 @@ function Awake()
 
 function OnGUI() 
 {
+    var x: int = Screen.width - BUTTON_WIDTH;
+	var y: int = Screen.height - BUTTON_HEIGHT;
+	
 	GUI.color = new Color(0, 0, 0, 1f);;
     GUI.Label(new Rect(0, 0, 250, 20), "ВЦ: " + planeHeight);
     GUI.Label(new Rect(0, 20, 250, 20), "СЦ: " + aircraftVelocity);
@@ -109,11 +117,29 @@ function OnGUI()
     GUI.Label(new Rect(0, 80, 250, 20), "УР: " + rotationAngel);
     GUI.Label(new Rect(0, 100, 250, 20), "ПЗ: " + snakeDuration);
     GUI.Label(new Rect(0, 120, 250, 20), "КП: " + snakeCount);
+    
+	// Draw a button for transfer to menu
+	if (GUI.Button(
+	  // Center in X, 2/3 of the height in Y
+	  new Rect(
+	  x, 
+	  y, 
+	  BUTTON_WIDTH, 
+	  BUTTON_HEIGHT),
+	  "Назад"
+	))
+	  
+	{
+	  PlayerPrefs.SetString("ForMainMenu", training);
+	  // On Click, clear text area.
+	  Application.LoadLevel("MenuScene");
+	}
 }
- 
+
 function Start () 
 {	
-	var training : String = PlayerPrefs.GetString("Training");
+	training = PlayerPrefs.GetString("Training");
+
 	var splited : String[] = training.Split([" ", "\n"], System.StringSplitOptions.None);
 	
 	if ((splited.length % NUMBER_COUNT) != 0)
@@ -179,26 +205,41 @@ function Update ()
 	}
 			
 	if (state == IMITATION)
-	{	
-		if (Time.time - timer > 1)
-		{
-			// Создаем новую точку
-			var point : GameObject = Instantiate(aircraftPrefab) as GameObject;
-			
-			point.transform.position = transform.position;
-			
-			timer = Time.time;
-		}
-		
+	{	 		
 	 	durationSite = durationSite - Time.deltaTime;
 	
 		tryExecuteNewCommand();
-		
- 		aircraftVelocity += Time.deltaTime * acceleration;
- 		planeHeight += Time.deltaTime * altitudeAcceleration * altitudeAccelerationDirection;
-	 	transform.Translate(Time.deltaTime * direction * aircraftVelocity * RATIO_VELOCITY);	
-	 	transform.Rotate(Vector3.forward, rotationAngel * Time.deltaTime);
+ 		updateAircraftParams();
  	}
+
+ 	if (state == END_OF_IMITATION)
+ 	{
+ 		updateAircraftParams();
+ 		
+		if (Time.time - timer > 20)
+		{
+			Application.LoadLevel("MenuScene"); // "MenuScene" is the scene nam
+		}
+ 	}
+}
+
+private function updateAircraftParams()
+{
+	if (Time.time - timer > 1)
+	{
+		// Создаем новую точку
+		var point : GameObject = Instantiate(aircraftPrefab) as GameObject;
+		
+		point.transform.position = transform.position;
+		
+		timer = Time.time;
+	}
+	
+	aircraftVelocity += Time.deltaTime * acceleration;
+	planeHeight += Time.deltaTime * altitudeAcceleration * altitudeAccelerationDirection;
+ 		
+ 	transform.Translate(Time.deltaTime * direction * aircraftVelocity * RATIO_VELOCITY);	
+ 	transform.Rotate(Vector3.forward, rotationAngel * Time.deltaTime);
 }
 
 private function parseSplitedArray(splited : String[])
@@ -600,6 +641,7 @@ private function tryExecuteNewCommand()
 	 	{
 	 		Debug.Log("Size of command pull [" + size + "] and number of command [" + numberOfCommand + "]");
 	 		state = END_OF_IMITATION;
+	 		timer = Time.time;
 	 	} 
 	 	else 
 	 	{

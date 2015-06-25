@@ -20,6 +20,7 @@ function OnGUI()
 			BUTTON_HEIGHT),
 			"Назад"))
 	{
+		PlayerPrefs.SetString("ForMainMenu", PlayerPrefs.GetString("Training"));
 		Application.LoadLevel("MenuScene");
 	}
 }

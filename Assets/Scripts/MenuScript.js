@@ -34,6 +34,13 @@ function OnGUI()
 			LABEL_HEIGHT),
 			"Модуль устройства имитации  КСА 86Ж6"
 	);
+	
+	if (PlayerPrefs.GetString("ForMainMenu") != "")
+	{
+		text = PlayerPrefs.GetString("ForMainMenu");
+	    PlayerPrefs.SetString("ForMainMenu", "");
+	}
+	
 	text = GUI.TextArea (
 	  // Center in X, 2/3 of the height in Y
 	  new Rect (
@@ -57,8 +64,8 @@ function OnGUI()
 	  if (!text.Equals(""))
 	  {
 	   	// On Click, load the first level.
-	  	PlayerPrefs.SetString("Training", text); // Set pref for indicator game scene
 	  	Application.LoadLevel("IndicatorScene"); // "IndicatorScene" is the scene name
+	  	PlayerPrefs.SetString("Training", text); // Set pref for indicator game scene
 	  }
 	}
 	
@@ -76,6 +83,7 @@ function OnGUI()
 	{
 	  // On Click, clear text area.
 	  Application.LoadLevel("ReferenceScene");
+	  PlayerPrefs.SetString("Training", text);
 	}
 	
 	var error : String = PlayerPrefs.GetString("Error");
